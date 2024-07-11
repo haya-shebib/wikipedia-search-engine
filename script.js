@@ -1,3 +1,41 @@
+function debounce(func, wait, immediate) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        const later = function() {
+            timeout = null;
+            if (!immediate) func.apply(context, args);
+        };
+        const callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if (callNow) func.apply(context, args);
+    };
+}
+
+
+// const debounce = (func , delay) =>{
+//     let currentTimeout
+
+
+//     return function(){
+//         const later = function() {        
+//         clearTimeout(currentTimeout)
+//         currentTimeout= setTimeout(() =>{
+//             func()
+//         } 
+//      ),delay
+//     }
+   
+// }
+
+
+
+
+
+
+
+
 let resultsContainer = document.getElementsByClassName("container")[0]
 
 const validateInput = (el) => {
@@ -7,6 +45,9 @@ const validateInput = (el) => {
         generateResults(el.value, el)
     }
 }
+
+
+const debouncedValidateInput = debounce(validateInput, 3000);
 
 const generateResults = (searchValue, inputField) => {
     fetch(
@@ -35,3 +76,9 @@ const generateResults = (searchValue, inputField) => {
         }
     })
 }
+
+
+// Add event listener to the search box
+document.getElementById('searchBox').addEventListener('input', function() {
+    debouncedValidateInput(this);
+});
